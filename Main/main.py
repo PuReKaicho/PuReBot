@@ -1,5 +1,5 @@
 import discord
-from discord import Embed
+from discord import Embed, Game
 
 from PuReBot.Main import Static
 from PuReBot.Permissions import Secret
@@ -18,8 +18,8 @@ commands = {
 async def on_ready():
     print("Bot is logged in successfully. Running on servers:\n")
     [(lambda s: print("  - %s (%s)" % (s.name, s.id)))(s) for s in client.guilds]
-    await client.change_presence(activity=discord.client.create_activity(name="Spiel"))
-    print(client.activity)
+    await client.change_presence(activity=discord.Activity(type=0, name="Mission Listen & Kill"))
+
 
 @client.event
 async def on_message(message):
