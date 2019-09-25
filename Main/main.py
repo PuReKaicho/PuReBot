@@ -1,5 +1,8 @@
+from _multiprocessing import send
+
 import discord
-from discord import Embed, Game
+from discord import Embed, Game, abc
+from discord.ext.commands import bot
 
 from PuReBot.Main import Static
 from PuReBot.Permissions import Secret
@@ -18,7 +21,7 @@ commands = {
 async def on_ready():
     print("Bot is logged in successfully. Running on servers:\n")
     [(lambda s: print("  - %s (%s)" % (s.name, s.id)))(s) for s in client.guilds]
-    await client.change_presence(activity=discord.Activity(type=0, name="Mission Listen & Kill"))
+    await client.change_presence(activity=discord.Activity(type=0, name="Listen & Kill"))
 
 
 @client.event
@@ -29,24 +32,18 @@ async def on_message(message):
         if commands.__contains__(invoke):
             await commands.get(invoke).ex(args, message, client, invoke)
         else:
-            await client.send_message(message.channel, embed=Embed(color=discord.Color.red(), descriotion=(
+            await abc.Messageable.send(message.channel, embed=Embed(color=discord.Color.red(), description=(
                         "Der Befehl '%s' ist nicht gültig!!!" % invoke)))
 
 @client.event
 async def on_member_join(member):
-    await client.send_message(member, "css b,i Befehle des Bots:"
-                                   "**Invoke:  **                                    !"
-                                   "**Befehle: **                                   !help"
-                                   "**Nachrichten löschen:**            !clear"
-                                   "**Kick:**                                          !kick"
-                                   "**Youtube:**                                  !yt"
-                                   "** Regeln Musikplayer: **"
-                                           "Musik kann nur ab Vize/Admin hinzugefügt werden."
-                                           "Wenn man bestimmte Lieder hören möchte,"
-                                           "kann einem Admin eine PN mit den Liedern geschrieben werden."
-                                           "Die Maximale Anzahl an Liedern beträgt 15,"
-                                           "dementsprechend auch bei einer Playlist nur mit Maximal 15 Liedern."
-                                           "Die Lieder sollten eine Maximal Laufzeit von 15 Minuten nicht überschreiten.```")
+    await abc.Messageable.send(member, "##Willkommen %s!\n"
+                                      "\n"
+                                      "Auf dem %s Server von %s!\n"
+                                      "Wenn du möchtest kannst du etwas über dich in den %s Channel eintragen.\n"
+                                      "Hab Spaß und einen schönen Tag!\n"
+                                      "`Zum Nutzen des Musikbots benutzt / vor dem Befehl, wenn ihr die Befehle nicht kennt, könnt ihr euch eine Befehlsliste mit /help zusenden lassen.\nViel Spaß noch auf dem Server!`"
+                               % (member.name, member.guild.name, member.guild.owner.mention, discord.utils.get(member.guild.channels, id=530919958503227392).mention))
 
 
 client.run(Secret.TOKEN)
